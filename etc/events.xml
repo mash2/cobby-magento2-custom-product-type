@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="cobby_catalog_product_export_after">
+        <observer name="product_export" instance="Cobby\CustomProductType\Observer\ExportProduct"/>
+    </event>
+    <event name="cobby_import_product_import_before">
+        <observer name="product_import" instance="Cobby\CustomProductType\Observer\ImportProduct"/>
+    </event>
+</config>
