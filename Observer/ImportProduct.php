@@ -13,16 +13,23 @@ use Magento\Framework\Event\ObserverInterface;
 class ImportProduct implements ObserverInterface
 {
     const SIMPLE = 'simple';
+    const CUSTOM_TYPE = 'customType';
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $data = $observer->getTransport()->getData();
         $result = array();
+
         foreach ($data as $productId => $productData) {
-            $productData['_type'] = self::SIMPLE;
+            if ($productData['_type'] == self::CUSTOM_TYPE) {
+                $productData['_type'] = self::SIMPLE;
+            }
+
             $result[$productId] = $productData;
         }
+
         $observer->getTransport()->setData($result);
+
         return $this;
     }
 }

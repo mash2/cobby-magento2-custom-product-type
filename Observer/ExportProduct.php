@@ -13,16 +13,23 @@ use Magento\Framework\Event\ObserverInterface;
 class ExportProduct implements ObserverInterface
 {
     const CUSTOM_TYPE = 'customType';
+    const SIMPLE = 'simple';
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $data = $observer->getTransport()->getData();
         $result = array();
+
         foreach ($data as $productId => $productData) {
-            $productData['_type'] = self::CUSTOM_TYPE;
+            if ($productData['_type'] == self::SIMPLE) {
+                $productData['_type'] = self::CUSTOM_TYPE;
+            }
+
             $result[$productId] = $productData;
         }
+
         $observer->getTransport()->setData($result);
+
         return $this;
     }
 }
