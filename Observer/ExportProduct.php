@@ -12,9 +12,6 @@ use Magento\Framework\Event\ObserverInterface;
 
 class ExportProduct implements ObserverInterface
 {
-    const CUSTOM_TYPE = 'customType';
-    const SIMPLE = 'simple';
-
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $data = $observer->getTransport()->getData();
@@ -22,8 +19,9 @@ class ExportProduct implements ObserverInterface
 
         foreach ($data as $productId => $productData) {
 
-            if ($productData['_attributes']['cobby_custom_product_type'] != '') {
-//                $productData['_type'] = $productData['_attributes']['cobby_custom_product_type'];
+            //checking custom product type in admin store
+            if ($productData['_attributes'][0]['cobby_custom_product_type'] != '') {
+                $productData['_type'] = $productData['_attributes'][0]['cobby_custom_product_type'];
             }
 
             $result[$productId] = $productData;
