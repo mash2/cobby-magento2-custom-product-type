@@ -51,7 +51,7 @@ class InstallData implements InstallDataInterface
                 'label' => 'Cobby Custom Product Type',
                 'required' => false,
                 'user_defined' => true,
-                'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_STORE,
+                'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
                 //...
                 'group' => 'Cobby Custom Product Type',
             ]

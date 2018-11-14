@@ -21,8 +21,9 @@ class ExportProduct implements ObserverInterface
         $result = array();
 
         foreach ($data as $productId => $productData) {
-            if ($productData['_type'] == self::SIMPLE) {
-                $productData['_type'] = self::CUSTOM_TYPE;
+
+            if ($productData['_attributes']['cobby_custom_product_type'] != '') {
+//                $productData['_type'] = $productData['_attributes']['cobby_custom_product_type'];
             }
 
             $result[$productId] = $productData;
