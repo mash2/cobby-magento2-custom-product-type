@@ -23,14 +23,15 @@ class ImportProduct implements ObserverInterface
 
         $typeModels = $data['type_models'];
         $usedSkus = $data['used_skus'];
+        $products = $data['rows'];
 
-        $products = array();
-
-        foreach ($data as $item) {
-            if (isset($item['sku'])) {
-                $products[] = $item;
-            }
-        }
+//        $products = array();
+//
+//        foreach ($data as $item) {
+//            if (isset($item['sku'])) {
+//                $products[] = $item;
+//            }
+//        }
 
         foreach ($products as $product) {
             if ($product['product_type'] == self::SIMPLE ||
@@ -43,7 +44,7 @@ class ImportProduct implements ObserverInterface
             $product['attributes'][0]['cobby_custom_product_type'] = $product['product_type'];
             $product['product_type'] = self::SIMPLE;
 
-            $result[] = $product;
+            $result['rows'][] = $product;
         }
 
         foreach ($typeModels as $typeModel) {
