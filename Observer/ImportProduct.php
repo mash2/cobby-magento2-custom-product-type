@@ -25,13 +25,6 @@ class ImportProduct implements ObserverInterface
         $usedSkus = $data['used_skus'];
         $products = $data['rows'];
 
-//        $products = array();
-//
-//        foreach ($data as $item) {
-//            if (isset($item['sku'])) {
-//                $products[] = $item;
-//            }
-//        }
 
         foreach ($products as $product) {
             if ($product['product_type'] == self::SIMPLE ||
