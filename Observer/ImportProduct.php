@@ -9,50 +9,76 @@
 namespace Cobby\CustomProductType\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
+use Mash2\Cobby\Model\Import\Product\ProductManagement;
 
 class ImportProduct implements ObserverInterface
 {
     const SIMPLE = 'simple';
     const CONFIGURABLE = 'configurable';
+    const VIRTUAL = 'virtual';
+    const PREFIX = 'foo';
+
+    private $productCollectionFactory;
+
+    public function __construct(
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
+    ) {
+        $this->productCollectionFactory = $productCollectionFactory;
+    }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $data = $observer->getTransport()->getData();
 
         $result = array();
+        $entityIds = array();
+        $existingProducts = array();
+        $newProducts = array();
 
         $typeModels = $data['type_models'];
         $usedSkus = $data['used_skus'];
         $products = $data['rows'];
 
-
         foreach ($products as $product) {
-            if ($product['product_type'] == self::SIMPLE ||
-                    $product['product_type'] == self::CONFIGURABLE) {
-
-                $result[] = $product;
-                continue;
+            if (isset($product[ProductManagement::COL_PRODUCT_ID])) {
+                $entityIds[] = $product[ProductManagement::COL_PRODUCT_ID];
+                $existingProducts[] = $product;
+            } else {
+                $newProducts[] = $product;
             }
-
-            $product['attributes'][0]['cobby_custom_product_type'] = $product['product_type'];
-            $product['product_type'] = self::SIMPLE;
-
-            $result['rows'][] = $product;
         }
 
-        foreach ($typeModels as $typeModel) {
-            if ($typeModel == self::SIMPLE ||
-                    $typeModel == self::CONFIGURABLE) {
+        if ($existingProducts) {
+            $collection = $this->productCollectionFactory->create();
+            $items = $collection
+                ->setStoreId(\Magento\Store\Model\Store::DEFAULT_STORE_ID)
+                ->addAttributeToFilter('entity_id', array('in'=> $entityIds))
+                ->load();
 
-                $result['type_models'][] = $typeModel;
-                continue;
+            $productData = $items->toArray(array('entity_id', 'sku', 'type_id'));
+
+            foreach ($existingProducts as $existingProduct) {
+                //this switches the import product type with the value from the backend
+                $productType = $productData[$existingProduct['entity_id']]['type_id'];
+                $product['product_type'] = $productType;
+
+                $result['rows'][] = $product;
             }
-            $typeModel = self::SIMPLE;
+        }
 
-            $result['type_models'][] = $typeModel;
+        if ($newProducts) {
+            foreach ($newProducts as $newProduct) {
+                //here you can define, which product type should be set depending for example on the sku prefix
+                if (strpos($newProduct['sku'], self::PREFIX) !== false) {
+                    $newProduct['product_type'] = self::VIRTUAL;
+                }
+
+                $result['rows'][] = $newProduct;
+            }
         }
 
         $result['used_skus'] = $usedSkus;
+        $result['type_models'] = $typeModels;
 
         $observer->getTransport()->setData($result);
 
