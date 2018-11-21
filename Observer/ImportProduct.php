@@ -10,6 +10,7 @@ namespace Cobby\CustomProductType\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Mash2\Cobby\Model\Import\Product\ProductManagement;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 
 class ImportProduct implements ObserverInterface
 {
@@ -21,7 +22,7 @@ class ImportProduct implements ObserverInterface
     private $productCollectionFactory;
 
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
+        CollectionFactory $productCollectionFactory
     ) {
         $this->productCollectionFactory = $productCollectionFactory;
     }
@@ -60,9 +61,9 @@ class ImportProduct implements ObserverInterface
             foreach ($existingProducts as $existingProduct) {
                 //this switches the import product type with the value from the backend
                 $productType = $productData[$existingProduct['entity_id']]['type_id'];
-                $product['product_type'] = $productType;
+                $existingProduct['product_type'] = $productType;
 
-                $result['rows'][] = $product;
+                $result['rows'][] = $existingProduct;
             }
         }
 
