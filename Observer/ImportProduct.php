@@ -14,11 +14,6 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 
 class ImportProduct implements ObserverInterface
 {
-    const SIMPLE = 'simple';
-    const CONFIGURABLE = 'configurable';
-    const VIRTUAL = 'virtual';
-    const PREFIX = 'foo';
-
     private $productCollectionFactory;
 
     public function __construct(
@@ -70,8 +65,9 @@ class ImportProduct implements ObserverInterface
         if ($newProducts) {
             foreach ($newProducts as $newProduct) {
                 //here you can define, which product type should be set depending for example on the sku prefix
-                if (strpos($newProduct['sku'], self::PREFIX) !== false) {
-                    $newProduct['product_type'] = self::VIRTUAL;
+                //you can also use any other attribute and dependency
+                if (strpos($newProduct['sku'], 'foo') !== false) {
+                    $newProduct['product_type'] = 'virtual';
                 }
 
                 $result['rows'][] = $newProduct;
